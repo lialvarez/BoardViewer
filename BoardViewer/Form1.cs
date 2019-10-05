@@ -24,8 +24,6 @@ namespace BoardViewer
 		RichTextBox[] board_disp_array;
 		int index_to_draw;
 		bool must_redraw;
-
-
 		private enum AngleType{
 			ROLL_DATA,
 			PITCH_DATA,
