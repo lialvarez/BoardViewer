@@ -29,9 +29,9 @@
 			this.configPanel = new System.Windows.Forms.Panel();
 			this.disconnectButton = new System.Windows.Forms.Button();
 			this.panel3 = new System.Windows.Forms.Panel();
-			this.radioButton1 = new System.Windows.Forms.RadioButton();
-			this.radioButton2 = new System.Windows.Forms.RadioButton();
-			this.radioButton3 = new System.Windows.Forms.RadioButton();
+			this.stopBit2 = new System.Windows.Forms.RadioButton();
+			this.stopBit15 = new System.Windows.Forms.RadioButton();
+			this.stopBit1 = new System.Windows.Forms.RadioButton();
 			this.label13 = new System.Windows.Forms.Label();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.noneParity = new System.Windows.Forms.RadioButton();
@@ -113,45 +113,45 @@
 			// 
 			this.panel3.AutoSize = true;
 			this.panel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panel3.Controls.Add(this.radioButton1);
-			this.panel3.Controls.Add(this.radioButton2);
-			this.panel3.Controls.Add(this.radioButton3);
+			this.panel3.Controls.Add(this.stopBit2);
+			this.panel3.Controls.Add(this.stopBit15);
+			this.panel3.Controls.Add(this.stopBit1);
 			this.panel3.Location = new System.Drawing.Point(15, 333);
 			this.panel3.Name = "panel3";
 			this.panel3.Size = new System.Drawing.Size(55, 84);
 			this.panel3.TabIndex = 12;
 			// 
-			// radioButton1
+			// stopBit2
 			// 
-			this.radioButton1.AutoSize = true;
-			this.radioButton1.Location = new System.Drawing.Point(3, 60);
-			this.radioButton1.Name = "radioButton1";
-			this.radioButton1.Size = new System.Drawing.Size(37, 21);
-			this.radioButton1.TabIndex = 2;
-			this.radioButton1.Text = "2";
-			this.radioButton1.UseVisualStyleBackColor = true;
+			this.stopBit2.AutoSize = true;
+			this.stopBit2.Location = new System.Drawing.Point(3, 60);
+			this.stopBit2.Name = "stopBit2";
+			this.stopBit2.Size = new System.Drawing.Size(37, 21);
+			this.stopBit2.TabIndex = 2;
+			this.stopBit2.Text = "2";
+			this.stopBit2.UseVisualStyleBackColor = true;
 			// 
-			// radioButton2
+			// stopBit15
 			// 
-			this.radioButton2.AutoSize = true;
-			this.radioButton2.Location = new System.Drawing.Point(3, 32);
-			this.radioButton2.Name = "radioButton2";
-			this.radioButton2.Size = new System.Drawing.Size(49, 21);
-			this.radioButton2.TabIndex = 1;
-			this.radioButton2.Text = "1.5";
-			this.radioButton2.UseVisualStyleBackColor = true;
+			this.stopBit15.AutoSize = true;
+			this.stopBit15.Location = new System.Drawing.Point(3, 32);
+			this.stopBit15.Name = "stopBit15";
+			this.stopBit15.Size = new System.Drawing.Size(49, 21);
+			this.stopBit15.TabIndex = 1;
+			this.stopBit15.Text = "1.5";
+			this.stopBit15.UseVisualStyleBackColor = true;
 			// 
-			// radioButton3
+			// stopBit1
 			// 
-			this.radioButton3.AutoSize = true;
-			this.radioButton3.Checked = true;
-			this.radioButton3.Location = new System.Drawing.Point(3, 3);
-			this.radioButton3.Name = "radioButton3";
-			this.radioButton3.Size = new System.Drawing.Size(37, 21);
-			this.radioButton3.TabIndex = 0;
-			this.radioButton3.TabStop = true;
-			this.radioButton3.Text = "1";
-			this.radioButton3.UseVisualStyleBackColor = true;
+			this.stopBit1.AutoSize = true;
+			this.stopBit1.Checked = true;
+			this.stopBit1.Location = new System.Drawing.Point(3, 3);
+			this.stopBit1.Name = "stopBit1";
+			this.stopBit1.Size = new System.Drawing.Size(37, 21);
+			this.stopBit1.TabIndex = 0;
+			this.stopBit1.TabStop = true;
+			this.stopBit1.Text = "1";
+			this.stopBit1.UseVisualStyleBackColor = true;
 			// 
 			// label13
 			// 
@@ -610,9 +610,9 @@
 		private System.Windows.Forms.RichTextBox richTextBox0;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.Panel panel3;
-		private System.Windows.Forms.RadioButton radioButton1;
-		private System.Windows.Forms.RadioButton radioButton2;
-		private System.Windows.Forms.RadioButton radioButton3;
+		private System.Windows.Forms.RadioButton stopBit2;
+		private System.Windows.Forms.RadioButton stopBit15;
+		private System.Windows.Forms.RadioButton stopBit1;
 		private System.Windows.Forms.Timer redrawTimer;
 		private System.Windows.Forms.Button disconnectButton;
 	}

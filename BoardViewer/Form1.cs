@@ -92,16 +92,26 @@ namespace BoardViewer
 		private void ConnectButton_Click(object sender, EventArgs e) {
 			string port_name = comComboBox.SelectedItem.ToString();
 			Int32 baud_rate = Convert.ToInt32(baudRateNumeric.Value);
-			Parity parity = Parity.None;
-
+			// TODO: hacer dinamica la seleccion del paridad y stopbit
+			Parity parity = new Parity();
 			if (evenParity.Checked) {
 				parity = Parity.Even;
-			}else if (oddParity.Checked) {
+			} else if (oddParity.Checked) {
 				parity = Parity.Odd;
-			}else if (noneParity.Checked) {
+			} else if(noneParity.Checked){
 				parity = Parity.None;
 			}
 
+			StopBits stop_bits = new StopBits();
+
+			if (stopBit1.Checked) {
+				stop_bits = StopBits.One;
+			} else if (stopBit15.Checked) {
+				stop_bits = StopBits.OnePointFive;
+			} else if (stopBit2.Checked) {
+				stop_bits = StopBits.Two;
+			}
+			
 			Int32 data_bits = 8;
 			if (radioButton8bits.Checked) {
 				data_bits = 8; 
@@ -111,7 +121,7 @@ namespace BoardViewer
 
 			try {
 				is_connected = false;
-				mySerialPort = new SerialPort(port_name, baud_rate, parity, data_bits);
+				mySerialPort = new SerialPort(port_name, baud_rate, parity, data_bits, stop_bits);
 				mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceiveHandler);
 				mySerialPort.ReceivedBytesThreshold = word_length;
 				mySerialPort.Open();
