@@ -15,6 +15,13 @@ namespace BoardViewer
 			set { _id = value; }
 		}
 
+		private bool _enabled;
+
+		public bool Enabled {
+			get { return _enabled; }
+			set { _enabled = value; }
+		}
+
 		private int _roll;
 
 		public int Roll {
@@ -41,6 +48,7 @@ namespace BoardViewer
 			_roll = _board_roll;
 			_pitch = _board_pitch;
 			_yaw = _board_pitch;
+			_enabled = false;
 		}
 
 	}

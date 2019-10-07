@@ -18,7 +18,9 @@ namespace BoardViewer
 		private string combo_default_item = "Select COM port";
 		private bool is_connected;
 		private int word_length = 7;
-		char start_char = 'S';
+		private int data_threshold = 7;
+		private readonly char data_char = 'D';
+		private readonly char timeout_char = 'T';
 		Board[] board_array;
 		char[] ids = { '0', '1', '2', '3', '4', '5', '6', '7' };
 		RichTextBox[] board_disp_array;
@@ -33,6 +35,7 @@ namespace BoardViewer
 		private struct RXData{
 			public char id;
 			public AngleType angle;
+			public bool timeout;
 			public int sign;
 			public int value;
 			public bool valid;
@@ -123,7 +126,7 @@ namespace BoardViewer
 				is_connected = false;
 				mySerialPort = new SerialPort(port_name, baud_rate, parity, data_bits, stop_bits);
 				mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceiveHandler);
-				mySerialPort.ReceivedBytesThreshold = word_length;
+				mySerialPort.ReceivedBytesThreshold = data_threshold;
 				mySerialPort.Open();
 				redrawTimer.Enabled = true;
 				redrawTimer.Start();
@@ -144,7 +147,7 @@ namespace BoardViewer
 			ret.angle = AngleType.ROLL_DATA;
 			ret.valid = false;
 			if (valid) {
-				if (rx_data[0] == start_char) {
+				if (rx_data[0] == data_char) {
 					if (rx_data[1] >= '0' && rx_data[1] <= '7') {
 						ret.id = rx_data[1];
 						int value = 0;
@@ -178,10 +181,16 @@ namespace BoardViewer
 								valid = false;
 					}else
 							valid = false;
-				} else
+				} else if(rx_data[0] == timeout_char) {
+					ret.timeout = true;
+					if (rx_data[1] >= '0' && rx_data[1] <= '7')
+						ret.id = rx_data[1];
+					else
 						valid = false;
-			} else
+				}else
 					valid = false;
+			} else
+				valid = false;
 			ret.valid = valid;
 			return ret;
 		}
@@ -189,34 +198,47 @@ namespace BoardViewer
 		private void DataReceiveHandler(object sender, SerialDataReceivedEventArgs args) {
 			SerialPort port = (SerialPort)sender;
 			byte[] rx_data = new byte[word_length];
+			string rx_data_str;
 			port.Read(rx_data,0,word_length);
 			port.DiscardInBuffer();
-			string rx_data_str = Encoding.UTF8.GetString(rx_data, 0, rx_data.Length);
+			rx_data_str = Encoding.UTF8.GetString(rx_data, 0, rx_data.Length);
 			RXData board_data = RXDataParser(rx_data_str);
 			if (board_data.valid) {
 				UpdateBoard(board_data);
+			} else {
+				do {
+					port.Read(rx_data, 0, 1);
+					rx_data_str = Encoding.UTF8.GetString(rx_data, 0, 1);
+				} while (rx_data_str[0] != 'D');
+				port.DiscardInBuffer();
 			}
-			
+
 		}
 
 		private void UpdateBoard(RXData board_data) {
 			// verificar si el id esta en el array de ids;
 			int index = Array.IndexOf(ids, board_data.id);
 			bool valid = true;
+
 			if (index > -1) {
-				switch (board_data.angle) {
-					case AngleType.ROLL_DATA:
-						board_array[index].Roll = board_data.sign * board_data.value;
-						break;
-					case AngleType.PITCH_DATA:
-						board_array[index].Pitch = board_data.sign * board_data.value;
-						break;
-					case AngleType.YAW_DATA:
-						board_array[index].Yaw = board_data.sign * board_data.value;
-						break;
-					default:
-						valid = false;
-						break;
+				if (board_data.timeout) {
+					board_array[index].Enabled = false;
+				} else {
+					board_array[index].Enabled = true;
+					switch (board_data.angle) {
+						case AngleType.ROLL_DATA:
+							board_array[index].Roll = board_data.sign * board_data.value;
+							break;
+						case AngleType.PITCH_DATA:
+							board_array[index].Pitch = board_data.sign * board_data.value;
+							break;
+						case AngleType.YAW_DATA:
+							board_array[index].Yaw = board_data.sign * board_data.value;
+							break;
+						default:
+							valid = false;
+							break;
+					}
 				}
 				must_redraw = valid;
 				index_to_draw = index;
@@ -224,17 +246,29 @@ namespace BoardViewer
 		}
 
 		private void RedrawBoard(int _index) {
-			string[] lines = new string[3];
+			string[] lines = new string[4];
 
 			string roll_value = Convert.ToString(board_array[_index].Roll);
 			string pitch_value = Convert.ToString(board_array[_index].Pitch);
 			string yaw_value = Convert.ToString(board_array[_index].Yaw);
 
-			lines[0] = "Roll: " + roll_value;
-			lines[1] = "Pitch: " + pitch_value;
-			lines[2] = "Yaw: " + yaw_value;
+			string status = (board_array[_index].Enabled) ? "Online" : "Offline";
+			int start = "Status: ".Length;
+			int end = start + status.Length;
+
+			lines[0] = "Status: " + status;
+			lines[1] = "Roll: " + roll_value;
+			lines[2] = "Pitch: " + pitch_value;
+			lines[3] = "Yaw: " + yaw_value;
 
 			board_disp_array[_index].Lines = lines;
+
+			board_disp_array[_index].Select(start, end - start);
+			{
+				Color color = (board_array[_index].Enabled) ? Color.Green : Color.Red;
+				board_disp_array[_index].SelectionColor = color;
+			}
+			board_disp_array[_index].SelectionLength = 0;
 		}
 
 		private void RedrawTimer_Tick(object sender, EventArgs e) {
