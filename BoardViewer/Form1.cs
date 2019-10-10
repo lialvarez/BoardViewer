@@ -126,8 +126,9 @@ namespace BoardViewer
 				is_connected = false;
 				mySerialPort = new SerialPort(port_name, baud_rate, parity, data_bits, stop_bits);
 				mySerialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceiveHandler);
-				mySerialPort.ReceivedBytesThreshold = data_threshold;
+				//mySerialPort.ReceivedBytesThreshold = 1;
 				mySerialPort.Open();
+				mySerialPort.DiscardInBuffer();
 				redrawTimer.Enabled = true;
 				redrawTimer.Start();
 				is_connected = true;
@@ -197,22 +198,21 @@ namespace BoardViewer
 			
 		private void DataReceiveHandler(object sender, SerialDataReceivedEventArgs args) {
 			SerialPort port = (SerialPort)sender;
-			byte[] rx_data = new byte[word_length];
-			string rx_data_str;
-			port.Read(rx_data,0,word_length);
+			string all_str = port.ReadExisting();
 			port.DiscardInBuffer();
-			rx_data_str = Encoding.UTF8.GetString(rx_data, 0, rx_data.Length);
-			RXData board_data = RXDataParser(rx_data_str);
-			if (board_data.valid) {
-				UpdateBoard(board_data);
+			string rx_data_str = "-------";
+			int start_index = all_str.IndexOf('D');
+			if (start_index != -1 && start_index + word_length <=  all_str.Length) {
+				rx_data_str = all_str.Substring(start_index, word_length);
 			} else {
-				do {
-					port.Read(rx_data, 0, 1);
-					rx_data_str = Encoding.UTF8.GetString(rx_data, 0, 1);
-				} while (rx_data_str[0] != 'D');
-				port.DiscardInBuffer();
+				start_index = all_str.IndexOf('T');
+				if(start_index != -1 && start_index + word_length <= all_str.Length) {
+					rx_data_str = all_str.Substring(start_index, word_length);
+				}
 			}
-
+			RXData board_data = RXDataParser(rx_data_str);
+			if (board_data.valid)
+				UpdateBoard(board_data);
 		}
 
 		private void UpdateBoard(RXData board_data) {
